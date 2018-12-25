@@ -1,0 +1,28 @@
+FROM jenkinsci/blueocean:1.9.0
+LABEL Author "Hamza Althunibat <hamza.althunibat@moe.gov.ae>"
+LABEL Organization "Ministry of Education"
+LABEL Department="Information Technology"
+
+# Change to root user
+USER root
+
+#-------- Only Needed in My Environment
+# Install Self-signed Root CA
+COPY docker/assets/rootCA.crt /usr/local/share/ca-certificates/
+RUN  update-ca-certificates
+
+# Install base packages
+RUN apk -U add python py-pip ansible curl
+
+ARG TERRAFORM_VERSION
+
+RUN  pip install docker-compose pyVmomi
+
+RUN curl -s https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION:-'0.11.11'}/terraform_${TERRAFORM_VERSION:-'0.11.11'}_linux_amd64.zip -o terraform.zip && \
+      unzip terraform.zip && \
+      mv terraform /usr/local/bin
+# Configure docker rigistry mirror
+RUN mkdir -p /etc/docker && echo '{ "log-driver": "json-file","log-opts": {"max-size": "10m","max-file":"3" },"registry-mirrors": ["https://registry-mirror.localdomain"] }' > /etc/docker/daemon.json 
+
+# Change to jenkins user
+USER jenkins
