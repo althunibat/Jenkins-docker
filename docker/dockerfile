@@ -1,7 +1,4 @@
-FROM jenkinsci/blueocean:1.9.0
-LABEL Author "Hamza Althunibat <hamza.althunibat@moe.gov.ae>"
-LABEL Organization "Ministry of Education"
-LABEL Department="Information Technology"
+FROM jenkinsci/blueocean
 
 # Change to root user
 USER root
